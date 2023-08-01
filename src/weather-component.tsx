@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './WeatherForecast.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 interface WeatherData {
   date: string;
   temperature: string;
@@ -79,6 +81,9 @@ interface WeatherData {
     } catch (error) {
       console.error('Error fetching weather data:', error);
       setLoading(false)
+      toast.error('Something went wrong, please try again', {
+        position: toast.POSITION.BOTTOM_CENTER
+    });
     }
   };
 
@@ -87,19 +92,19 @@ interface WeatherData {
       <h1>7-Day Weather Forecast</h1>
       <div className='input-container'>
         <label>Address Line 1:</label>
-        <input type="text" value={addressLine1} onChange={handleAddressLine1Change} placeholder="Address Line 1" />
+        <input type='text' value={addressLine1} onChange={handleAddressLine1Change} placeholder='Address Line 1' />
       </div>
       <div className='input-container'>
         <label>City:</label>
-        <input type="text" value={city} onChange={handleCityChange} placeholder="City" />
+        <input type='text' value={city} onChange={handleCityChange} placeholder='City' />
       </div>
       <div className='input-container'>
         <label>State:</label>
-        <input type="text" value={state} onChange={handleStateChange} placeholder="State" />
+        <input type='text' value={state} onChange={handleStateChange} placeholder='State' />
       </div>
       <div className='input-container'>
         <label>Zip Code:</label>
-        <input type="text" value={zipCode} onChange={handleZipCodeChange} placeholder="Zip Code" />
+        <input type='text' value={zipCode} onChange={handleZipCodeChange} placeholder='Zip Code' />
       </div>
       <button onClick={fetchWeatherData}>Get Forecast</button>
       {loading && <div className='loading-feedback'>Loading...</div>}
@@ -110,6 +115,7 @@ interface WeatherData {
           </li>
         ))}
       </ul>
+      <ToastContainer />
     </div>
   );
 };
