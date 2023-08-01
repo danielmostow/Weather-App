@@ -16,3 +16,45 @@
   font-weight: bold;
   color: #333;
 }
+
+.weather-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 24px;;
+
+}
+.weather-card {
+  perspective: 1000px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 200px;
+  height: 150px;
+  cursor: pointer;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.weather-card > div {
+  position: absolute;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+}
+
+.weather-card h6 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+}
+.weather-card p {
+  margin: 5px 0;
+  color: #777;
+}

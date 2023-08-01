@@ -2,10 +2,14 @@ import React, { useState } from 'react'
 import './WeatherForecast.css'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import WeatherCard from './weather-card'
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+
 interface WeatherData {
-  date: string
-  temperature: string
-  description: string
+  date: { day: string; night: string };
+  temperature: { day: string; night: string };
+  shortForecast:{ day: string; night: string };
 }
 
   const WeatherForecast: React.FC = () => {
@@ -60,24 +64,18 @@ interface WeatherData {
         const nightForecast = dailyForecast[i + 1]
 
         const formattedDayForecast = {
-          date: dayForecast.name,
-          temperature: `${dayForecast.temperature} °F`,
-          description: dayForecast.detailedForecast,
-          time: 'Day',
-        }
-
-        const formattedNightForecast = {
-          date: nightForecast.name,
-          temperature: `${nightForecast.temperature} °F`,
-          description: nightForecast.detailedForecast,
-          time: 'Night',
-        }
-
-        formattedWeatherData.push(formattedDayForecast, formattedNightForecast)
+          date: { day: dayForecast.name, night: nightForecast.name},
+          temperature: { day: `${dayForecast.temperature} °F`, night: `${nightForecast.temperature} °F` },
+          shortForecast: {day: dayForecast.shortForecast, night: nightForecast.shortForecast}
+        };
+        formattedWeatherData.push(formattedDayForecast)
     }
 
     setWeatherData(formattedWeatherData)
     setLoading(false)
+    toast.success('Click the card to swap between night and day', {
+      position: toast.POSITION.BOTTOM_CENTER
+  })
     } catch (error) {
       console.error('Error fetching weather data:', error)
       setLoading(false)
@@ -88,33 +86,62 @@ interface WeatherData {
   }
 
   return (
-    <div className='container'>
-      <h1>7-Day Weather Forecast</h1>
-      <div className='input-container'>
-        <label>Address Line 1:</label>
-        <input type='text' value={addressLine1} onChange={handleAddressLine1Change} placeholder='Address Line 1' />
-      </div>
-      <div className='input-container'>
-        <label>City:</label>
-        <input type='text' value={city} onChange={handleCityChange} placeholder='City' />
-      </div>
-      <div className='input-container'>
-        <label>State:</label>
-        <input type='text' value={state} onChange={handleStateChange} placeholder='State' />
-      </div>
-      <div className='input-container'>
-        <label>Zip Code:</label>
-        <input type='text' value={zipCode} onChange={handleZipCodeChange} placeholder='Zip Code' />
-      </div>
-      <button onClick={fetchWeatherData}>Get Forecast</button>
+<div className='container'>
+    <h1>7-Day Weather Forecast</h1>
+    <div className='input-container'>
+      <TextField
+        label='Address Line 1'
+        variant='outlined'
+        value={addressLine1}
+        onChange={handleAddressLine1Change}
+        fullWidth
+      />
+    </div>
+    <div className='input-container'>
+      <TextField
+        label='City'
+        variant='outlined'
+        value={city}
+        onChange={handleCityChange}
+        fullWidth
+      />
+    </div>
+    <div className='input-container'>
+      <TextField
+        label='State'
+        variant='outlined'
+        value={state}
+        onChange={handleStateChange}
+        fullWidth
+      />
+    </div>
+    <div className='input-container'>
+      <TextField
+        label='Zip Code'
+        variant='outlined'
+        value={zipCode}
+        onChange={handleZipCodeChange}
+        fullWidth
+      />
+    </div>
+    <Button variant='contained' color='primary' onClick={fetchWeatherData}>
+      Get Forecast
+    </Button>
       {loading && <div className='loading-feedback'>Loading...</div>}
-      <ul>
+      
+      <div className='weather-cards-container'>
         {weatherData.map((data) => (
-          <li key={data.date}>
-            <strong>{data.date}</strong> - {data.temperature} - {data.description}
-          </li>
-        ))}
-      </ul>
+          <WeatherCard
+            key={data.date.day}
+            dayDate={data.date.day}
+            nightDate={data.date.night}
+            dayTemperature={data.temperature.day}
+            nightTemperature={data.temperature.night}
+            dayForecast={data.shortForecast.day}
+            nightForecast={data.shortForecast.night}
+          />
+  ))}
+</div>
       <ToastContainer />
     </div>
   )
