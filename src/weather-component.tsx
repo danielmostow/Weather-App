@@ -81,7 +81,7 @@ interface WeatherData {
     } catch (error) {
       console.error('Error fetching weather data:', error)
       setLoading(false)
-      toast.error('Something went wrong, please try again', {
+      toast.error('Something went wrong, please check your input and try again', {
         position: toast.POSITION.BOTTOM_CENTER
     })
     }
