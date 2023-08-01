@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './WeatherForecast.css'
 interface WeatherData {
   date: string;
   temperature: string;
@@ -7,51 +7,70 @@ interface WeatherData {
 }
 
   const WeatherForecast: React.FC = () => {
-  const [address, setAddress] = useState('');
-  const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
+    const [addressLine1, setAddressLine1] = useState('');
+    const [city, setCity] = useState('');
+    const [state, setState] = useState('');
+    const [zipCode, setZipCode] = useState('');
+    const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
 
-  const handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAddress(event.target.value);
+
+  const handleAddressLine1Change = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAddressLine1(event.target.value);
   };
 
+  const handleCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCity(event.target.value);
+  };
+
+  const handleStateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setState(event.target.value);
+  };
+
+  const handleZipCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setZipCode(event.target.value);
+  };
   const fetchWeatherData = async () => {
     try {
+      const fullAddress = `${addressLine1}, ${city}, ${state} ${zipCode}` ;
+
       // Fetch latitude and longitude from the US Census Geocoding service
-      //const geocodingApiUrl = `https://localhost:44339/WeatherApp?encodedAddress=${encodeURIComponent(address)}`;
-      const geocodingApiUrl = `https://localhost:44339/WeatherApp/coordinates?address=${(address)}`;
+      const geocodingApiUrl = `https://localhost:44339/WeatherApp/coordinates?address=${(fullAddress)}`;
       const geocodingResponse = await fetch(geocodingApiUrl)
       const geocodingData = await geocodingResponse.json();
       const { x, y } = geocodingData.result.addressMatches[0].coordinates;
-      // Fetch 7-day forecast from the US National Weather Service API
+
+      //fetch weather info from gov api
       const weatherApiUrl = `https://localhost:44339/WeatherApp/weather?x=${x}&y=${y}`;
       const weatherResponse = await fetch(weatherApiUrl);
-      const weatherDatam = await weatherResponse.json();
-      const weatherForecast = weatherDatam.properties.forecast;
-      const hi = await fetch(weatherForecast)
-      const bye = await hi.json();
-      const dailyForecast = bye.properties.periods.slice(0, 14);
+      const weatherProperties = await weatherResponse.json();
+
+      //fetch 7 day forecast from url generated from gov api
+      const weatherForecast = weatherProperties.properties.forecast;
+      const weatherForecastResponse = await fetch(weatherForecast)
+      const weatherForecastData = await weatherForecastResponse.json();
+      const dailyForecast = weatherForecastData.properties.periods.slice(0, 14);
 
       // Format weather data
-    const formattedWeatherData = [];
-    for (let i = 0; i < dailyForecast.length; i += 2) {
-      const dayForecast = dailyForecast[i];
-      const nightForecast = dailyForecast[i + 1];
+      const formattedWeatherData = [];
+      for (let i = 0; i < dailyForecast.length; i += 2) {
+        const dayForecast = dailyForecast[i];
+        const nightForecast = dailyForecast[i + 1];
 
-      const formattedDayForecast = {
-        date: dayForecast.name,
-        temperature: `${dayForecast.temperature} °F`,
-        description: dayForecast.detailedForecast,
-        time: 'Day',
-      };
+        const formattedDayForecast = {
+          date: dayForecast.name,
+          temperature: `${dayForecast.temperature} °F`,
+          description: dayForecast.detailedForecast,
+          time: 'Day',
+        };
 
-      const formattedNightForecast = {
-        date: nightForecast.name,
-        temperature: `${nightForecast.temperature} °F`,
-        description: nightForecast.detailedForecast,
-        time: 'Night',
-      };
+        const formattedNightForecast = {
+          date: nightForecast.name,
+          temperature: `${nightForecast.temperature} °F`,
+          description: nightForecast.detailedForecast,
+          time: 'Night',
+        };
 
-      formattedWeatherData.push(formattedDayForecast, formattedNightForecast);
+        formattedWeatherData.push(formattedDayForecast, formattedNightForecast);
     }
 
     setWeatherData(formattedWeatherData);
@@ -61,9 +80,29 @@ interface WeatherData {
   };
 
   return (
-    <div>
+    <div className='container'>
       <h1>7-Day Weather Forecast</h1>
-      <input type="text" value={address} onChange={handleAddressChange} placeholder="Enter Address" />
+      <div className='input-container'>
+        <label>Address Line 1:</label>
+        <input
+          type="text"
+          value={addressLine1}
+          onChange={handleAddressLine1Change}
+          placeholder="Address Line 1"
+        />
+      </div>
+      <div className='input-container'>
+        <label>City:</label>
+        <input type="text" value={city} onChange={handleCityChange} placeholder="City" />
+      </div>
+      <div className='input-container'>
+        <label>State:</label>
+        <input type="text" value={state} onChange={handleStateChange} placeholder="State" />
+      </div>
+      <div className='input-container'>
+        <label>Zip Code:</label>
+        <input type="text" value={zipCode} onChange={handleZipCodeChange} placeholder="Zip Code" />
+      </div>
       <button onClick={fetchWeatherData}>Get Forecast</button>
       <ul>
         {weatherData.map((data) => (
@@ -77,3 +116,4 @@ interface WeatherData {
 };
 
 export default WeatherForecast;
+

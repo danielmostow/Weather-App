@@ -1,0 +1,12 @@
+.input-container {
+  display: flex;
+  align-items: center;
+  padding-left: 20px; /* Adjust the value as per your preference */
+  padding-bottom: 20px;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh; /* Ensure the container takes the full height of the viewport */
+}
