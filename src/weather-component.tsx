@@ -1,91 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import './WeatherForecast.css'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 interface WeatherData {
-  date: string;
-  temperature: string;
-  description: string;
+  date: string
+  temperature: string
+  description: string
 }
 
   const WeatherForecast: React.FC = () => {
-    const [addressLine1, setAddressLine1] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('');
-    const [zipCode, setZipCode] = useState('');
-    const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
-    const [loading, setLoading] = useState(false); // Add a loading state
+    const [addressLine1, setAddressLine1] = useState('')
+    const [city, setCity] = useState('')
+    const [state, setState] = useState('')
+    const [zipCode, setZipCode] = useState('')
+    const [weatherData, setWeatherData] = useState<WeatherData[]>([])
+    const [loading, setLoading] = useState(false) // Add a loading state
 
 
   const handleAddressLine1Change = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAddressLine1(event.target.value);
-  };
+    setAddressLine1(event.target.value)
+  }
 
   const handleCityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCity(event.target.value);
-  };
+    setCity(event.target.value)
+  }
 
   const handleStateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState(event.target.value);
-  };
+    setState(event.target.value)
+  }
 
   const handleZipCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setZipCode(event.target.value);
-  };
+    setZipCode(event.target.value)
+  }
   const fetchWeatherData = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       // Fetch latitude and longitude from the US Census Geocoding service
-      const fullAddress = `${addressLine1}, ${city}, ${state} ${zipCode}` ;
-      const geocodingApiUrl = `https://localhost:44339/WeatherApp/coordinates?address=${(fullAddress)}`;
+      const fullAddress = `${addressLine1}, ${city}, ${state} ${zipCode}` 
+      const geocodingApiUrl = `https://localhost:44339/WeatherApp/coordinates?address=${(fullAddress)}`
       const geocodingResponse = await fetch(geocodingApiUrl)
-      const geocodingData = await geocodingResponse.json();
-      const { x, y } = geocodingData.result.addressMatches[0].coordinates;
+      const geocodingData = await geocodingResponse.json()
+      const { x, y } = geocodingData.result.addressMatches[0].coordinates
 
       //fetch weather info from gov api
-      const weatherApiUrl = `https://localhost:44339/WeatherApp/weather?x=${x}&y=${y}`;
-      const weatherResponse = await fetch(weatherApiUrl);
-      const weatherProperties = await weatherResponse.json();
+      const weatherApiUrl = `https://localhost:44339/WeatherApp/weather?x=${x}&y=${y}`
+      const weatherResponse = await fetch(weatherApiUrl)
+      const weatherProperties = await weatherResponse.json()
 
       //fetch 7 day forecast from url generated from gov api
-      const weatherForecast = weatherProperties.properties.forecast;
+      const weatherForecast = weatherProperties.properties.forecast
       const weatherForecastResponse = await fetch(weatherForecast)
-      const weatherForecastData = await weatherForecastResponse.json();
-      const dailyForecast = weatherForecastData.properties.periods.slice(0, 14);
+      const weatherForecastData = await weatherForecastResponse.json()
+      const dailyForecast = weatherForecastData.properties.periods.slice(0, 14)
 
       // Format weather data
-      const formattedWeatherData = [];
+      const formattedWeatherData = []
       for (let i = 0; i < dailyForecast.length; i += 2) {
-        const dayForecast = dailyForecast[i];
-        const nightForecast = dailyForecast[i + 1];
+        const dayForecast = dailyForecast[i]
+        const nightForecast = dailyForecast[i + 1]
 
         const formattedDayForecast = {
           date: dayForecast.name,
           temperature: `${dayForecast.temperature} °F`,
           description: dayForecast.detailedForecast,
           time: 'Day',
-        };
+        }
 
         const formattedNightForecast = {
           date: nightForecast.name,
           temperature: `${nightForecast.temperature} °F`,
           description: nightForecast.detailedForecast,
           time: 'Night',
-        };
+        }
 
-        formattedWeatherData.push(formattedDayForecast, formattedNightForecast);
+        formattedWeatherData.push(formattedDayForecast, formattedNightForecast)
     }
 
-    setWeatherData(formattedWeatherData);
+    setWeatherData(formattedWeatherData)
     setLoading(false)
     } catch (error) {
-      console.error('Error fetching weather data:', error);
+      console.error('Error fetching weather data:', error)
       setLoading(false)
       toast.error('Something went wrong, please try again', {
         position: toast.POSITION.BOTTOM_CENTER
-    });
+    })
     }
-  };
+  }
 
   return (
     <div className='container'>
@@ -117,8 +117,8 @@ interface WeatherData {
       </ul>
       <ToastContainer />
     </div>
-  );
-};
+  )
+}
 
-export default WeatherForecast;
+export default WeatherForecast
 
