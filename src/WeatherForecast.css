@@ -10,3 +10,9 @@
   align-items: center;
   height: 100vh; /* Ensure the container takes the full height of the viewport */
 }
+.loading-feedback {
+  margin-top: 20px;
+  font-size: 40px;
+  font-weight: bold;
+  color: #333;
+}

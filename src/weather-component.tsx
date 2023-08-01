@@ -12,6 +12,7 @@ interface WeatherData {
     const [state, setState] = useState('');
     const [zipCode, setZipCode] = useState('');
     const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
+    const [loading, setLoading] = useState(false); // Add a loading state
 
 
   const handleAddressLine1Change = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,9 +32,9 @@ interface WeatherData {
   };
   const fetchWeatherData = async () => {
     try {
-      const fullAddress = `${addressLine1}, ${city}, ${state} ${zipCode}` ;
-
+      setLoading(true);
       // Fetch latitude and longitude from the US Census Geocoding service
+      const fullAddress = `${addressLine1}, ${city}, ${state} ${zipCode}` ;
       const geocodingApiUrl = `https://localhost:44339/WeatherApp/coordinates?address=${(fullAddress)}`;
       const geocodingResponse = await fetch(geocodingApiUrl)
       const geocodingData = await geocodingResponse.json();
@@ -74,8 +75,10 @@ interface WeatherData {
     }
 
     setWeatherData(formattedWeatherData);
+    setLoading(false)
     } catch (error) {
       console.error('Error fetching weather data:', error);
+      setLoading(false)
     }
   };
 
@@ -84,12 +87,7 @@ interface WeatherData {
       <h1>7-Day Weather Forecast</h1>
       <div className='input-container'>
         <label>Address Line 1:</label>
-        <input
-          type="text"
-          value={addressLine1}
-          onChange={handleAddressLine1Change}
-          placeholder="Address Line 1"
-        />
+        <input type="text" value={addressLine1} onChange={handleAddressLine1Change} placeholder="Address Line 1" />
       </div>
       <div className='input-container'>
         <label>City:</label>
@@ -104,6 +102,7 @@ interface WeatherData {
         <input type="text" value={zipCode} onChange={handleZipCodeChange} placeholder="Zip Code" />
       </div>
       <button onClick={fetchWeatherData}>Get Forecast</button>
+      {loading && <div className='loading-feedback'>Loading...</div>}
       <ul>
         {weatherData.map((data) => (
           <li key={data.date}>
