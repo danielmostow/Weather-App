@@ -85,6 +85,15 @@ interface WeatherData {
     }
   }
 
+  const reset = () =>{
+    setAddressLine1('')
+    setCity('')
+    setLoading(false)
+    setState('')
+    setWeatherData([])
+    setZipCode('')
+  }
+
   return (
 <div className='container'>
     <h1>7-Day Weather Forecast</h1>
@@ -126,6 +135,9 @@ interface WeatherData {
     </div>
     <Button variant='contained' color='primary' onClick={fetchWeatherData}>
       Get Forecast
+    </Button>
+    <Button variant='contained' color='secondary' onClick={reset} sx={{marginTop: '10px'}}>
+      Reset
     </Button>
       {loading && <div className='loading-feedback'>Loading...</div>}
       
